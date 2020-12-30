@@ -3,4 +3,10 @@
 
 A simple bytecode virtual machine based on the LLJSVM (https://github.com/LowLevelJavaScript/16-Bit-Virtual-Machine)
 
+## Test & Build
+
+```sh
+cargo test
+cargo build
+```
 
