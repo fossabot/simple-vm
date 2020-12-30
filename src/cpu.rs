@@ -3,7 +3,6 @@ use std::collections::HashMap;
 
 const MOV_LIT_R1: u8 = 0x10;
 const MOV_LIT_R2: u8 = 0x11;
-const ADD_REG_REG: u8 = 0x12;
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub enum RegisterName {
@@ -20,32 +19,35 @@ pub enum RegisterName {
 }
 
 pub struct CPU {
-    registers: HashMap<RegisterName, u16>,
+    register_map: HashMap<RegisterName, u16>,
     memory: Memory,
 }
 
 impl CPU {
     pub fn new(memory: Memory) -> Self {
-        let mut registers = HashMap::new();
-        registers.insert(RegisterName::Ip, 0);
-        registers.insert(RegisterName::Acc, 0);
-        registers.insert(RegisterName::R1, 0);
-        registers.insert(RegisterName::R2, 0);
-        registers.insert(RegisterName::R3, 0);
-        registers.insert(RegisterName::R4, 0);
-        registers.insert(RegisterName::R5, 0);
-        registers.insert(RegisterName::R6, 0);
-        registers.insert(RegisterName::R7, 0);
-        registers.insert(RegisterName::R8, 0);
-        CPU { registers, memory }
+        let mut register_map = HashMap::new();
+        register_map.insert(RegisterName::Ip, 0);
+        register_map.insert(RegisterName::Acc, 0);
+        register_map.insert(RegisterName::R1, 0);
+        register_map.insert(RegisterName::R2, 0);
+        register_map.insert(RegisterName::R3, 0);
+        register_map.insert(RegisterName::R4, 0);
+        register_map.insert(RegisterName::R5, 0);
+        register_map.insert(RegisterName::R6, 0);
+        register_map.insert(RegisterName::R7, 0);
+        register_map.insert(RegisterName::R8, 0);
+        CPU {
+            register_map,
+            memory,
+        }
     }
 
     pub fn get_register_value(&mut self, name: RegisterName) -> u16 {
-        *self.registers.get(&name).unwrap_or(&0)
+        *self.register_map.get(&name).unwrap_or(&0)
     }
 
     pub fn set_register_value(&mut self, name: RegisterName, value: u16) {
-        self.registers.insert(name, value);
+        self.register_map.insert(name, value);
     }
 
     pub fn fetch(&mut self) -> u8 {
@@ -67,11 +69,11 @@ impl CPU {
             MOV_LIT_R1 => {
                 let literal = self.fetch_16();
                 self.set_register_value(RegisterName::R1, literal);
-            },
+            }
             MOV_LIT_R2 => {
                 let literal = self.fetch_16();
                 self.set_register_value(RegisterName::R2, literal);
-            },
+            }
             _ => panic!("Unknown instruction"),
         }
     }
