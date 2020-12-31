@@ -1,9 +1,7 @@
+use crate::instruction::*;
 use crate::memory::Memory;
 use std::collections::HashMap;
-
-const MOV_LIT_R1: u8  = 0x10;
-const MOV_LIT_R2: u8  = 0x11;
-const ADD_REG_REG: u8 = 0x12;
+use std::fmt;
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub enum RegisterName {
@@ -17,6 +15,23 @@ pub enum RegisterName {
     R6,
     R7,
     R8,
+}
+
+impl fmt::Display for RegisterName {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            RegisterName::Ip => write!(f, "IP"),
+            RegisterName::Acc => write!(f, "ACC"),
+            RegisterName::R1 => write!(f, "R1"),
+            RegisterName::R2 => write!(f, "R2"),
+            RegisterName::R3 => write!(f, "R3"),
+            RegisterName::R4 => write!(f, "R4"),
+            RegisterName::R5 => write!(f, "R5"),
+            RegisterName::R6 => write!(f, "R6"),
+            RegisterName::R7 => write!(f, "R7"),
+            RegisterName::R8 => write!(f, "R8"),
+        }
+    }
 }
 
 pub struct CPU {
@@ -74,7 +89,7 @@ impl CPU {
             MOV_LIT_R2 => {
                 let literal = self.fetch_16();
                 self.set_register_value(RegisterName::R2, literal);
-            },
+            }
             ADD_REG_REG => {
                 let r1 = self.fetch();
                 let r2 = self.fetch();
@@ -92,7 +107,7 @@ impl CPU {
         match num {
             0x01 => self.get_register_value(RegisterName::R1),
             0x02 => self.get_register_value(RegisterName::R2),
-            _ => panic!("Unknown register value")
+            _ => panic!("Unknown register value"),
         }
     }
 
@@ -100,9 +115,13 @@ impl CPU {
         let instruction = self.fetch();
         self.execute(instruction);
     }
+
+    pub fn debug(&mut self) {
+        for (key, value) in &self.register_map {
+            println!("{} : {}", key, value);
+        }
+    }
 }
-
-
 
 #[cfg(test)]
 mod tests {
