@@ -95,6 +95,11 @@ impl CPU {
             _ => panic!("Unknown register value")
         }
     }
+
+    pub fn step(&mut self) {
+        let instruction = self.fetch();
+        self.execute(instruction);
+    }
 }
 
 
@@ -173,46 +178,49 @@ mod tests {
     #[test]
     fn should_execute_mov_lit_r1() {
         let mut memory = Memory::new(10);
-        memory.set_memory(0, 0x12);
-        memory.set_memory(1, 0x34);
+        memory.set_memory(0, MOV_LIT_R1);
+        memory.set_memory(1, 0x12);
+        memory.set_memory(2, 0x34);
 
         let mut cpu = CPU::new(memory);
         cpu.set_register_value(RegisterName::Ip, 0);
 
-        cpu.execute(MOV_LIT_R1);
+        cpu.step();
 
         assert_eq!(cpu.get_register_value(RegisterName::R1), 0x1234);
-        assert_eq!(cpu.get_register_value(RegisterName::Ip), 2);
+        assert_eq!(cpu.get_register_value(RegisterName::Ip), 3);
     }
 
     #[test]
     fn should_execute_mov_lit_r2() {
         let mut memory = Memory::new(10);
-        memory.set_memory(0, 0x12);
-        memory.set_memory(1, 0x34);
+        memory.set_memory(0, MOV_LIT_R2);
+        memory.set_memory(1, 0x12);
+        memory.set_memory(2, 0x34);
 
         let mut cpu = CPU::new(memory);
         cpu.set_register_value(RegisterName::Ip, 0);
 
-        cpu.execute(MOV_LIT_R2);
+        cpu.step();
 
         assert_eq!(cpu.get_register_value(RegisterName::R2), 0x1234);
-        assert_eq!(cpu.get_register_value(RegisterName::Ip), 2);
+        assert_eq!(cpu.get_register_value(RegisterName::Ip), 3);
     }
 
     #[test]
     fn should_execute_add_reg_reg() {
         let mut memory = Memory::new(10);
-        memory.set_memory(0, 0x01);
-        memory.set_memory(1, 0x02);
+        memory.set_memory(0, ADD_REG_REG);
+        memory.set_memory(1, 0x01);
+        memory.set_memory(2, 0x02);
 
         let mut cpu = CPU::new(memory);
         cpu.set_register_value(RegisterName::R1, 5);
         cpu.set_register_value(RegisterName::R2, 6);
 
-        cpu.execute(ADD_REG_REG);
+        cpu.step();
 
         assert_eq!(cpu.get_register_value(RegisterName::Acc), 11);
-        assert_eq!(cpu.get_register_value(RegisterName::Ip), 2);
+        assert_eq!(cpu.get_register_value(RegisterName::Ip), 3);
     }
 }
