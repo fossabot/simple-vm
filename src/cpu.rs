@@ -1,8 +1,9 @@
 use crate::memory::Memory;
 use std::collections::HashMap;
 
-const MOV_LIT_R1: u8 = 0x10;
-const MOV_LIT_R2: u8 = 0x11;
+const MOV_LIT_R1: u8  = 0x10;
+const MOV_LIT_R2: u8  = 0x11;
+const ADD_REG_REG: u8 = 0x12;
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub enum RegisterName {
@@ -73,11 +74,30 @@ impl CPU {
             MOV_LIT_R2 => {
                 let literal = self.fetch_16();
                 self.set_register_value(RegisterName::R2, literal);
+            },
+            ADD_REG_REG => {
+                let r1 = self.fetch();
+                let r2 = self.fetch();
+                let register_value_1 = self.u8_to_register_value(r1);
+                let register_value_2 = self.u8_to_register_value(r2);
+                let sum = register_value_1 + register_value_2;
+
+                self.set_register_value(RegisterName::Acc, sum);
             }
             _ => panic!("Unknown instruction"),
         }
     }
+
+    fn u8_to_register_value(&mut self, num: u8) -> u16 {
+        match num {
+            0x01 => self.get_register_value(RegisterName::R1),
+            0x02 => self.get_register_value(RegisterName::R2),
+            _ => panic!("Unknown register value")
+        }
+    }
 }
+
+
 
 #[cfg(test)]
 mod tests {
@@ -177,6 +197,22 @@ mod tests {
         cpu.execute(MOV_LIT_R2);
 
         assert_eq!(cpu.get_register_value(RegisterName::R2), 0x1234);
+        assert_eq!(cpu.get_register_value(RegisterName::Ip), 2);
+    }
+
+    #[test]
+    fn should_execute_add_reg_reg() {
+        let mut memory = Memory::new(10);
+        memory.set_memory(0, 0x01);
+        memory.set_memory(1, 0x02);
+
+        let mut cpu = CPU::new(memory);
+        cpu.set_register_value(RegisterName::R1, 5);
+        cpu.set_register_value(RegisterName::R2, 6);
+
+        cpu.execute(ADD_REG_REG);
+
+        assert_eq!(cpu.get_register_value(RegisterName::Acc), 11);
         assert_eq!(cpu.get_register_value(RegisterName::Ip), 2);
     }
 }
