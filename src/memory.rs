@@ -13,6 +13,11 @@ impl Memory {
         self.memory[index] = value
     }
 
+    pub fn set_memory_u16(&mut self, index: usize, value: u16) {
+        self.memory[index] = ((value & 0xff00) >> 8) as u8;
+        self.memory[index + 1] = (value & 0x00ff) as u8;
+    }
+
     pub fn get_memory_u8(&self, index: usize) -> u8 {
         self.memory[index]
     }
@@ -52,6 +57,16 @@ mod tests {
 
         memory.set_memory(0, 0x12);
         memory.set_memory(1, 0x34);
+
+        assert_eq!(memory.get_memory_u8(0), 0x12);
+        assert_eq!(memory.get_memory_u8(1), 0x34);
+    }
+
+    #[test]
+    fn should_set_memory_value_u16() {
+        let mut memory = Memory::new(10);
+
+        memory.set_memory_u16(0, 0x1234);
 
         assert_eq!(memory.get_memory_u8(0), 0x12);
         assert_eq!(memory.get_memory_u8(1), 0x34);

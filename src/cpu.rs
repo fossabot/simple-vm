@@ -34,13 +34,13 @@ impl fmt::Display for RegisterName {
     }
 }
 
-pub struct CPU {
+pub struct CPU<'a> {
     register_map: HashMap<RegisterName, u16>,
-    memory: Memory,
+    memory: &'a mut Memory,
 }
 
-impl CPU {
-    pub fn new(memory: Memory) -> Self {
+impl<'a> CPU<'a> {
+    pub fn new(memory: &'a mut Memory) -> CPU<'a> {
         let mut register_map = HashMap::new();
         register_map.insert(RegisterName::Ip, 0);
         register_map.insert(RegisterName::Acc, 0);
@@ -95,6 +95,13 @@ impl CPU {
                 let to_register = self.number_to_register(to_register_number);
                 let value_from_register = self.get_register_value(from_register);
                 self.set_register_value(to_register, value_from_register);
+            },
+            MOV_REG_MEM => {
+                let from_register_number = self.fetch();
+                let from_register = self.number_to_register(from_register_number);
+                let memory_address = self.fetch_16();
+                let value_from_register = self.get_register_value(from_register);
+                self.memory.set_memory_u16(memory_address as usize, value_from_register);
             },
             ADD_REG_REG => {
                 let r1 = self.fetch();
@@ -151,8 +158,8 @@ mod tests {
 
     #[test]
     fn should_be_able_to_get_register_value() {
-        let memory = Memory::new(10);
-        let mut cpu = CPU::new(memory);
+        let mut memory = Memory::new(10);
+        let mut cpu = CPU::new(&mut memory);
 
         let acc = cpu.get_register_value(RegisterName::Acc);
 
@@ -161,8 +168,8 @@ mod tests {
 
     #[test]
     fn should_be_able_to_set_register_value() {
-        let memory = Memory::new(10);
-        let mut cpu = CPU::new(memory);
+        let mut memory = Memory::new(10);
+        let mut cpu = CPU::new(&mut memory);
 
         cpu.set_register_value(RegisterName::Acc, 1);
         cpu.set_register_value(RegisterName::Ip, 2);
@@ -192,7 +199,7 @@ mod tests {
         let mut memory = Memory::new(10);
         memory.set_memory(0, 0x12);
 
-        let mut cpu = CPU::new(memory);
+        let mut cpu = CPU::new(&mut memory);
         cpu.set_register_value(RegisterName::Ip, 0);
 
         let instruction_fetched = cpu.fetch();
@@ -207,7 +214,7 @@ mod tests {
         memory.set_memory(0, 0x12);
         memory.set_memory(1, 0x34);
 
-        let mut cpu = CPU::new(memory);
+        let mut cpu = CPU::new(&mut memory);
         cpu.set_register_value(RegisterName::Ip, 0);
 
         let instruction_fetched = cpu.fetch_16();
@@ -224,7 +231,7 @@ mod tests {
         memory.set_memory(2, 0x01);
         memory.set_memory(3, 2);
 
-        let mut cpu = CPU::new(memory);
+        let mut cpu = CPU::new(&mut memory);
         cpu.set_register_value(RegisterName::Ip, 0);
 
         cpu.step();
@@ -240,7 +247,7 @@ mod tests {
         memory.set_memory(1, 0x02);
         memory.set_memory(2, 0x03);
 
-        let mut cpu = CPU::new(memory);
+        let mut cpu = CPU::new(&mut memory);
         cpu.set_register_value(RegisterName::R1, 1);
         cpu.set_register_value(RegisterName::R2, 2);
 
@@ -252,13 +259,36 @@ mod tests {
     }
 
     #[test]
+    fn should_execute_mov_reg_mem() {
+        let mut memory = Memory::new(10);
+        memory.set_memory(0, MOV_REG_MEM);
+        memory.set_memory(1, 0x02);
+        memory.set_memory(2, 0x00);
+        memory.set_memory(3, 0x05);
+
+        memory.set_memory(5, 0x00);
+        memory.set_memory(6, 0x00);
+
+        let mut cpu = CPU::new(&mut memory);
+        cpu.set_register_value(RegisterName::R1, 0xFFFF);
+
+        cpu.step();
+
+        let expected = cpu.memory.get_memory_u16(5);
+
+        assert_eq!(expected, 0xFFFF);
+        assert_eq!(cpu.get_register_value(RegisterName::R1), 0xFFFF);
+        assert_eq!(cpu.get_register_value(RegisterName::Ip), 4);
+    }
+
+    #[test]
     fn should_execute_add_reg_reg() {
         let mut memory = Memory::new(10);
         memory.set_memory(0, ADD_REG_REG);
         memory.set_memory(1, 0x01);
         memory.set_memory(2, 0x02);
 
-        let mut cpu = CPU::new(memory);
+        let mut cpu = CPU::new(&mut memory);
         cpu.set_register_value(RegisterName::R1, 5);
         cpu.set_register_value(RegisterName::R2, 6);
 
