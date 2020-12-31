@@ -87,11 +87,7 @@ impl CPU {
                 let r1 = self.fetch();
                 let register = self.number_to_register(r1);
                 self.set_register_value(register, literal);
-            }
-            MOV_LIT_R2 => {
-                let literal = self.fetch_16();
-                self.set_register_value(RegisterName::R2, literal);
-            }
+            },
             ADD_REG_REG => {
                 let r1 = self.fetch();
                 let r2 = self.fetch();
@@ -100,7 +96,7 @@ impl CPU {
                 let sum = register_value_1 + register_value_2;
 
                 self.set_register_value(RegisterName::Acc, sum);
-            }
+            },
             _ => panic!("Unknown instruction"),
         }
     }
@@ -227,22 +223,6 @@ mod tests {
 
         assert_eq!(cpu.get_register_value(RegisterName::R1), 0x0001);
         assert_eq!(cpu.get_register_value(RegisterName::Ip), 4);
-    }
-
-    #[test]
-    fn should_execute_mov_lit_r2() {
-        let mut memory = Memory::new(10);
-        memory.set_memory(0, MOV_LIT_R2);
-        memory.set_memory(1, 0x12);
-        memory.set_memory(2, 0x34);
-
-        let mut cpu = CPU::new(memory);
-        cpu.set_register_value(RegisterName::Ip, 0);
-
-        cpu.step();
-
-        assert_eq!(cpu.get_register_value(RegisterName::R2), 0x1234);
-        assert_eq!(cpu.get_register_value(RegisterName::Ip), 3);
     }
 
     #[test]
