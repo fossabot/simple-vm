@@ -19,11 +19,11 @@ cargo build
 
 ## VM Instructions
 
-| Instruction   | Arguments      | Description |
-|---------------|----------------|-------------|
-| `MOV_LIT_REG` | `LIT, REG`     | Moves a 16 bit literal to a register. e.g., `MOV_LIT_REG 0x12 0x34 0x02`|
-| `MOV_LIT_R2`  | `LIT`          | Move 16 bit literal to the register R2 |
-| `ADD_REG_REG` | `R1, R2`       | Add values of registers provided and place the result in the accumulator|
+| Instruction    | Arguments      | Description |
+|----------------|----------------|-------------|
+| `MOV_LIT_REG`  | `LIT, REG`     | Moves a 16 bit literal to a register. e.g., `MOV_LIT_REG 0x12 0x34 0x02`|
+| `MOV_REG_REG`  | `REG_FROM, REG_TO`     | Move the value of `REG_FROM` to `REG_TO`. e.g., `MOV_REG_REG 0x02 0x03` |
+| `ADD_REG_REG`  | `R1, R2`       | Add values of registers provided and place the result in the accumulator|
 
 ## Registers
 
