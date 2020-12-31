@@ -31,6 +31,11 @@ cargo build
 |------------|-------------|-----------|
 |`IP`        |`0x00`       | Instruction pointer |
 |`Acc`       |`0x01`       | Accumulator |
-|`R1`        |`0x02`       | Register 1 |
-|`R2`        |`0x03`       | Register 2 |
-|`R3`        |`0x04`       | Register 2 |
+|`R1`        |`0x02`       | General Purpose Register 1 |
+|`R2`        |`0x03`       | General Purpose Register 2 |
+|`R3`        |`0x04`       | General Purpose Register 3 |
+|`R4`        |`0x05`       | General Purpose Register 4 |
+|`R5`        |`0x06`       | General Purpose Register 5 |
+|`R6`        |`0x07`       | General Purpose Register 6 |
+|`R7`        |`0x08`       | General Purpose Register 7 |
+|`R8`        |`0x09`       | General Purpose Register 8 |
