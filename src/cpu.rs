@@ -5,16 +5,16 @@ use std::fmt;
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub enum RegisterName {
-    Ip,
-    Acc,
-    R1,
-    R2,
-    R3,
-    R4,
-    R5,
-    R6,
-    R7,
-    R8,
+    Ip = 0,
+    Acc = 1,
+    R1 = 2,
+    R2 = 3,
+    R3 = 4,
+    R4 = 5,
+    R5 = 6,
+    R6 = 7,
+    R7 = 8,
+    R8 = 9,
 }
 
 impl fmt::Display for RegisterName {
@@ -82,9 +82,11 @@ impl CPU {
 
     pub fn execute(&mut self, instruction: u8) {
         match instruction {
-            MOV_LIT_R1 => {
+            MOV_LIT_REG => {
                 let literal = self.fetch_16();
-                self.set_register_value(RegisterName::R1, literal);
+                let r1 = self.fetch();
+                let register = self.number_to_register(r1);
+                self.set_register_value(register, literal);
             }
             MOV_LIT_R2 => {
                 let literal = self.fetch_16();
@@ -100,6 +102,22 @@ impl CPU {
                 self.set_register_value(RegisterName::Acc, sum);
             }
             _ => panic!("Unknown instruction"),
+        }
+    }
+
+    fn number_to_register(&mut self, num: u8) -> RegisterName {
+        match num {
+            0x00 => RegisterName::Ip,
+            0x01 => RegisterName::Acc,
+            0x02 => RegisterName::R1,
+            0x03 => RegisterName::R2,
+            0x04 => RegisterName::R3,
+            0x05 => RegisterName::R4,
+            0x06 => RegisterName::R5,
+            0x07 => RegisterName::R6,
+            0x08 => RegisterName::R7,
+            0x09 => RegisterName::R8,
+            _ => panic!("Unknown register value")
         }
     }
 
@@ -195,19 +213,20 @@ mod tests {
     }
 
     #[test]
-    fn should_execute_mov_lit_r1() {
+    fn should_execute_mov_lit_reg() {
         let mut memory = Memory::new(10);
-        memory.set_memory(0, MOV_LIT_R1);
-        memory.set_memory(1, 0x12);
-        memory.set_memory(2, 0x34);
+        memory.set_memory(0, MOV_LIT_REG);
+        memory.set_memory(1, 0x00);
+        memory.set_memory(2, 0x01);
+        memory.set_memory(3, 2);
 
         let mut cpu = CPU::new(memory);
         cpu.set_register_value(RegisterName::Ip, 0);
 
         cpu.step();
 
-        assert_eq!(cpu.get_register_value(RegisterName::R1), 0x1234);
-        assert_eq!(cpu.get_register_value(RegisterName::Ip), 3);
+        assert_eq!(cpu.get_register_value(RegisterName::R1), 0x0001);
+        assert_eq!(cpu.get_register_value(RegisterName::Ip), 4);
     }
 
     #[test]

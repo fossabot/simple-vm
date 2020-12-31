@@ -8,7 +8,7 @@ use crate::memory::Memory;
 
 fn main() {
     let mut memory = Memory::new(10);
-    memory.set_memory(0, MOV_LIT_R1);
+    memory.set_memory(0, MOV_LIT_REG);
     memory.set_memory(1, 0x12);
     memory.set_memory(2, 0x34);
 
