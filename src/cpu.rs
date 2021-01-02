@@ -103,6 +103,13 @@ impl<'a> CPU<'a> {
                 let value_from_register = self.get_register_value(from_register);
                 self.memory.set_memory_u16(memory_address as usize, value_from_register);
             },
+            MOV_MEM_REG => {
+                let memory_address = self.fetch_16();
+                let register_to_value = self.fetch();
+                let register_to = self.number_to_register(register_to_value);
+                let memory_value = self.memory.get_memory_u16(memory_address as usize);
+                self.set_register_value(register_to, memory_value);
+            },
             ADD_REG_REG => {
                 let r1 = self.fetch();
                 let r2 = self.fetch();
@@ -296,5 +303,24 @@ mod tests {
 
         assert_eq!(cpu.get_register_value(RegisterName::Acc), 11);
         assert_eq!(cpu.get_register_value(RegisterName::Ip), 3);
+    }
+
+    #[test]
+    fn should_execute_mov_mem_to_reg() {
+        let mut memory = Memory::new(10);
+        memory.set_memory(0, MOV_MEM_REG);
+        memory.set_memory(1, 0x00);
+        memory.set_memory(2, 0x04);
+        memory.set_memory(3, 0x02);
+        memory.set_memory(4, 0x12);
+        memory.set_memory(5, 0x34);
+
+        let mut cpu = CPU::new(&mut memory);
+        cpu.set_register_value(RegisterName::R1, 1);
+
+        cpu.step();
+
+        assert_eq!(cpu.get_register_value(RegisterName::R1), 0x1234);
+        assert_eq!(cpu.get_register_value(RegisterName::Ip), 4);
     }
 }
