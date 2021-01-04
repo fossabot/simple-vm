@@ -119,6 +119,14 @@ impl<'a> CPU<'a> {
 
                 self.set_register_value(RegisterName::Acc, sum);
             },
+            JMP_NOT_EQ => {
+                let value = self.fetch_16();
+                let address = self.fetch_16();
+
+                if value != self.get_register_value(RegisterName::Acc) {
+                    self.set_register_value(RegisterName::Ip, address);
+                }
+            }
             _ => panic!("Unknown instruction"),
         }
     }
@@ -322,5 +330,23 @@ mod tests {
 
         assert_eq!(cpu.get_register_value(RegisterName::R1), 0x1234);
         assert_eq!(cpu.get_register_value(RegisterName::Ip), 4);
+    }
+
+    #[test]
+    fn should_jump_if_value_not_equal_to_acc() {
+        let mut memory = Memory::new(10);
+        memory.set_memory(0, JMP_NOT_EQ);
+        memory.set_memory(1, 0x12);
+        memory.set_memory(2, 0x34);
+        memory.set_memory(3, 0x00);
+        memory.set_memory(4, 0x08);
+        memory.set_memory(5, 0x34);
+
+        let mut cpu = CPU::new(&mut memory);
+        cpu.set_register_value(RegisterName::Acc, 1);
+
+        cpu.step();
+
+        assert_eq!(cpu.get_register_value(RegisterName::Ip), 0x0008);
     }
 }
