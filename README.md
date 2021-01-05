@@ -17,6 +17,12 @@ cargo test
 cargo build
 ```
 
+## Run Examples
+
+```sh
+cargo run example screen-device-example
+```
+
 ## VM Instructions
 
 | Instruction    | Arguments      | Description |

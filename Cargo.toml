@@ -1,6 +1,6 @@
 [workspace]
-
 members = [
     "vm",
-    "screen-device"
+    "screen-device",
+    "examples/screen-device-example"
 ]
