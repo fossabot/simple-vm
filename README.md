@@ -10,6 +10,16 @@ A simple bytecode virtual machine based on the [LLJSVM](https://github.com/LowLe
 - To learn and practice [Rust](https://www.rust-lang.org/)
 - And to have fun!
 
+## Project Structure
+
+```
+|
+|- vm
+|- assembler
+|- screen-device
+|- examples
+```
+
 ## Test & Build
 
 ```sh
