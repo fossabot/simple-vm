@@ -2,6 +2,7 @@
 
 ![Build](https://github.com/renjithgr/simple-vm/workflows/Build/badge.svg)
 ![MIT License](https://img.shields.io/github/license/renjithgr/simple-vm.svg)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Frenjithgr%2Fsimple-vm.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Frenjithgr%2Fsimple-vm?ref=badge_shield)
 
 A simple bytecode virtual machine based on the [LLJSVM](https://github.com/LowLevelJavaScript/16-Bit-Virtual-Machine) by [Francis Stokes](https://github.com/francisrstokes).
 
@@ -56,3 +57,7 @@ cargo run example screen-device-example
 |`R6`        |`0x07`       | General Purpose Register 6 |
 |`R7`        |`0x08`       | General Purpose Register 7 |
 |`R8`        |`0x09`       | General Purpose Register 8 |
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Frenjithgr%2Fsimple-vm.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Frenjithgr%2Fsimple-vm?ref=badge_large)
